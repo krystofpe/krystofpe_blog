@@ -59,7 +59,7 @@ plugins:
 
 author:
   name   : "Kryštof Pěnka"
-  avatar : "/assets/images/profile-photo.jpeg"
+  avatar : "/assets/images/bio-photo.jpg"
   bio    : "My awesome biography constrained to a sentence or two goes here."
   links:
     - label: "Website"
