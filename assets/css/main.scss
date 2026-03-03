@@ -1,0 +1,87 @@
+---
+---
+@charset "utf-8";
+
+// Typography -----------------------------------------------------------------
+$serif: "Spectral", "PT Serif", Georgia, serif;
+$sans-serif: "Inter", "PT Sans", "Helvetica Neue", Arial, sans-serif;
+$monospace: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+$global-font-family: $sans-serif;
+$header-font-family: $serif;
+$caption-font-family: $serif;
+$type-size-0: 1rem;
+$type-size-1: 1.15rem;
+$type-size-2: 1.35rem;
+$type-size-3: 1.65rem;
+$type-size-4: 2rem;
+$type-size-5: 2.75rem;
+$type-size-6: 3.25rem;
+$type-size-7: 3.75rem;
+$type-size-8: 4.25rem;
+$paragraph-indent: true;
+$indent-var: 1.25rem;
+
+// Colors ----------------------------------------------------------------------
+$background-color: #fdfcf9;
+$text-color: #1d1c2c;
+$link-color: #2563eb;
+$link-color-hover: darken($link-color, 7%);
+$text-color-alt: #4c4a5c;
+$primary-color: #f97316;
+$masthead-link-color: #1d1c2c;
+$masthead-link-color-hover: $primary-color;
+$border-color: #e4dfd3;
+
+// Code highlighting palette (Base16: Sunrise blend) --------------------------
+$base00: #fdf0e6;
+$base01: #f7d9c4;
+$base02: #f2c6aa;
+$base03: #a38a7b;
+$base04: #8d7768;
+$base05: #5f4b44;
+$base06: #47342f;
+$base07: #2d1f1c;
+$base08: #d45d79;
+$base09: #e5891c;
+$base0A: #c19212;
+$base0B: #4b9c5e;
+$base0C: #1f9daa;
+$base0D: #3c6dd8;
+$base0E: #9c4ed7;
+$base0F: #b64f2a;
+
+// Layout tweaks ---------------------------------------------------------------
+$max-width: 1100px;
+$masthead-height: 4.5rem;
+$sidebar-sticky: true;
+
+@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}";
+@import "minimal-mistakes";
+
+// Custom selectors ------------------------------------------------------------
+.page__title {
+  letter-spacing: -0.01em;
+}
+
+.btn,
+.btn--primary {
+  padding: 0.85rem 1.65rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.sidebar .author__avatar img {
+  border: 3px solid $primary-color;
+}
+
+.highlight {
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(44, 41, 61, 0.18);
+}
+
+blockquote {
+  border-left: 0.3rem solid $primary-color;
+  background: rgba($primary-color, 0.08);
+}
