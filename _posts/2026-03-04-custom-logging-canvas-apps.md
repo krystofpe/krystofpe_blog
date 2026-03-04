@@ -68,7 +68,7 @@ erDiagram
 
 A single Power Automate flow writes every log entry. The canvas app calls it by passing just the actionable context while the flow enriches the request with SharePoint lookups.
 
-![Power Automate logging flow]({{ '/assets/images/power-automate-logging-flow.svg' | relative_url }})
+![Power Automate logging flow]({{ '/assets/images/power-automate-logging-flow.png' | relative_url }})
 
 ```mermaid
 flowchart LR
