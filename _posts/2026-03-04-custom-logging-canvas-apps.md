@@ -23,7 +23,7 @@ erDiagram
     ENVIRONMENTS ||--o{ APPLICATIONS : hosts
     APPLICATIONS ||--o{ ACTIONS : catalogs
     APPLICATIONS ||--o{ ANALYTICS : logs
-    ACTIONS ||--o{ ANALYTICS : describes
+    ACTIONS ||--o{ ANALYTICS : descriptions
 
     ENVIRONMENTS {
         string Title
@@ -35,7 +35,7 @@ erDiagram
         string ApplicationId
         lookup Environment
         string EnvironmentType
-        string IdeKey
+        string IdeaKey
     }
     ACTIONS {
         string Title
