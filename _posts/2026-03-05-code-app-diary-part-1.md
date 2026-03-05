@@ -22,6 +22,8 @@ Before I could even touch JSX, I had to give my workstation all the toys a code 
    ```sh
    pac --version
    ```
+   Also you can use the office Power Platform Tools extension for VS Code.
+
 3. **Create an authentication profile**  
    ```sh
    pac auth create --name contoso-dev --url https://make.powerapps.com --applicationId <client-id> --tenant <tenant-id>
@@ -30,7 +32,7 @@ Before I could even touch JSX, I had to give my workstation all the toys a code 
    ```
    This keeps solution exports and `pac paportal` commands scoped to the correct tenant without re‑signing in every time.
 4. **Enable code components for the environment**  
-   Inside Power Platform admin center, open **Settings → Features → Power Apps component framework for canvas apps** and flip it on. Repeat per environment—Dev/Test/Prod don’t inherit.
+   Inside Power Platform admin center, open **Product → Settings → Features → Power Apps Code App** and flip it on. Repeat per environment—Dev/Test/Prod don’t inherit.
 5. **Provision the solution container up front**  
    Create (or reuse) a managed ALM-ready solution, e.g. `company.CodeApp.Shell`. From the repo root:
    ```sh
@@ -44,7 +46,7 @@ Before I could even touch JSX, I had to give my workstation all the toys a code 
    npm install
    ```
    Then install the Power Apps helper packages declared in `package.json` (in my case `@microsoft/power-apps`, `@microsoft/power-apps-vite`).
-7. **Build once before touching Power Apps**  
+7. **Build once before shipping project**  
    ```sh
    npm run build
    ```
