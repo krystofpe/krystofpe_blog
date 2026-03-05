@@ -138,31 +138,30 @@ I managed to create solid frame of the application with the main landing page wh
 
 ## Architecture Diagram
 
+```
 graph TD
-    user[FinCon / Billing Analyst] --> shell[Power Apps shell<br/>Local Play iframe]
-    shell --> host[pac code start bridge<br/>power.config.json localAppUrl]
-    host --> vite[Vite dev server / Vite build output]
+flowchart LR
+    USERS --> PORTAL[Power Apps Portal
+    (runs inside Microsoft 365)]
+    PORTAL --> HOST[Power Apps Host Bridge
+    (pac code start keeps session + auth)]
+    HOST --> APP[Code React App (runs locally via Vite or from published build)]
+    APP --> DASH[Overview Dashboard – shows KPIs & shortcuts]
+    APP --> TABLES[Dataset Views – filter, review, edit records]
 
-    subgraph React Code App (src/)
-        main[main.tsx<br/>bootstraps <App/>]
-        layout[AppLayout<br/>nav + sections]
-        overview[OverviewPage<br/>dataset health tiles]
-        dataset[DatasetPage<br/>filters, forms, table]
-        columns[datasetColumns.ts<br/>builds columns/forms from .power schemas]
-        loader[datasetLoader.ts<br/>fetchDatasetRecords + projectRecordFromRaw]
-        services[Generated Dataverse services<br/>src/generated/services/*]
+    subgraph Data Connections
+        TABLES --> DATAVERSE[(Dataverse Tables)
+        Billing Items / Prices / Manual Inputs / Billing / Aggregates / Categories]
     end
 
-    vite --> main --> layout
-    layout --> overview
-    layout --> dataset
-    dataset --> columns
-    dataset --> loader
-    loader --> services
-    services --> dataverse[(Dataverse tables<br/>acoe_ia_bimain / ... / categorymapping)]
+    DATAVERSE <--> PPCLI[Power Platform CLI (pac) – used for metadata sync & publishing]
+
+    APP -. code + schemas .-> SOURCE[Project Repo (React + generated Dataverse services)]
+```
 
 ## App Layout 
 
+```
 Overview Page (src/pages/OverviewPage.tsx:1-64)
 ├─ Executive summary header (timestamp + CTA)
 └─ Tile grid
@@ -199,6 +198,7 @@ Shared Data/Schema Layer
    ├─ Parses .power/schemas to build column order + labels
    ├─ Derives mobile card fields and form definitions
    └─ Exposes getters consumed by App.tsx
+```
 
 ## What’s Next
 
