@@ -8,7 +8,7 @@ toc: true
 excerpt: "My first attempts at building a Power Apps code app from scratch: setting up the toolchain, fighting through prompting via Codex and GitHub Copilot"
 ---
 
-## Kickstarting a Code App Environment (Tutorial)
+## Kickstarting a Code App Environment
 
 Before I could even touch JSX, I had to give my workstation all the toys a code app expects. If you are starting from scratch, these are the steps I wish someone had printed on a single page. I rewrote this section to match Microsoft’s official quickstart plus the exact steps I followed for the company project. It walks through the journey from pretty much clean laptop to first deployed build. I had "pac" installed previously, same goes for .NET but I ended up installing it again or in case of .NET updating it to the version 10.
 
