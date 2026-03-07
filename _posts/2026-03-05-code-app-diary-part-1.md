@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Code App Diary · Part 1: From Blank Vite Shell to hopefully MVP application"
+title: "Code App Diary · Part 1: From Zero to Blank Vite Shell"
 date: 2026-03-05 00:00:00 -0500
 categories: [Power Platform]
 tags: [Power Apps, Power Apps code components, PAC CLI, Vite, React]
@@ -10,7 +10,7 @@ excerpt: "My first attempts at building a Power Apps code app from scratch: sett
 
 ## Kickstarting a Code App Environment
 
-Before I could even touch JSX, I had to give my workstation all the toys a code app expects. If you are starting from scratch, these are the steps I wish someone had printed on a single page. I rewrote this section to match Microsoft’s official quickstart plus the exact steps I followed for the company project. It walks through the journey from pretty much clean laptop to first deployed build. I had "pac" installed previously, same goes for .NET but I ended up installing it again or in case of .NET updating it to the version 10.
+Before I will touch any JSX, I have to give my workstation all the toys a code app expects. If you are starting from scratch, these are the steps I wish someone had printed on a single page. I rewrote this section to match Microsoft’s official quickstart guid and something extra. It walks through the journey from pretty much clean laptop to first deployed build. I had "pac" installed previously, same goes for .NET but I ended up installing it again or in case of .NET updating it to the version 10.
 
 ### 1. Prerequisites
 
@@ -35,17 +35,17 @@ pac --version
 If you are not using the sample repo, scaffold Microsoft’s Vite starter:
 
 ```bash
-npx degit github:microsoft/PowerAppsCodeApps/templates/vite my-code-app
-cd my-code-app
+npx degit github:microsoft/PowerAppsCodeApps/templates/vite code-app
+cd code-app
 npm install
-pac code init --displayname "My Code App"
+pac code init --displayname "code.app"
 ```
 
 ### 3. Clone & install this repo
 
 ```bash
 git clone https://github.com/<org>/<repo>.git
-cd <repo>/invoicing-platform
+cd <repo>/code-app
 npm install
 ```
 
@@ -69,7 +69,7 @@ Use `--device-code` if interactive login fails and make sure you’re signed in 
 ```bash
 pac code add-data-source -a dataverse -t prefix_table_entity_a
 pac code add-data-source -a dataverse -t prefix_table_entity_b
-pac code add-data-source -a dataverse -t prefix_table_entity_3
+pac code add-data-source -a dataverse -t prefix_table_entity_c
 ```
 
 PAC updates `src/generated/**`, `.power/schemas/**`, and `power.config.json`. Commit these outputs.
@@ -104,7 +104,7 @@ pac code push \
   --publish
 ```
 
-You can also try the new module:
+You can also try the new module which in the end worked form me best:
 
 ```bash
 npx power-apps push -s "companyCodeAppSolution"
@@ -128,84 +128,10 @@ pac solution import \
 - [Power Apps code components overview](https://learn.microsoft.com/power-apps/developer/component-framework/overview)
 - [Vite official guide](https://vite.dev/guide/)
 
-Those ten sections mirror Microsoft’s guidance and capture every command I ran before diving into UI polish.
+Those ten sections mirror Microsoft’s guidance and capture every command I ran before pushing blank code app container to the environment.
 
-## Making the Shell Match the Vision
+With the tooling now behaving, I’m wrapping this entry as soon as the skeleton project reaches parity with the official quickstart. That keeps the focus on getting from “blank laptop” to “repeatable code app scaffolding” without drifting into design rabbit holes.
 
-With the plumbing ready, I discovered the “blank slate” reality of code apps: nothing looks like the design until you type every pixel into CSS. Today’s focus was rebuilding the ProjectHub-inspired frame inside a Vite/React app.
+## To Be Continued
 
-I managed to create solid frame of the application with the main landing page which substitutes as dashboard and couple of sub pages with table view with basic functionalities like filtering, sorting and creating new items.
-
-## Architecture Diagram
-
-```
-graph TD
-flowchart LR
-    USERS --> PORTAL[Power Apps Portal
-    (runs inside Microsoft 365)]
-    PORTAL --> HOST[Power Apps Host Bridge
-    (pac code start keeps session + auth)]
-    HOST --> APP[Code React App (runs locally via Vite or from published build)]
-    APP --> DASH[Overview Dashboard – shows KPIs & shortcuts]
-    APP --> TABLES[Dataset Views – filter, review, edit records]
-
-    subgraph Data Connections
-        TABLES --> DATAVERSE[(Dataverse Tables)
-        Billing Items / Prices / Manual Inputs / Billing / Aggregates / Categories]
-    end
-
-    DATAVERSE <--> PPCLI[Power Platform CLI (pac) – used for metadata sync & publishing]
-
-    APP -. code + schemas .-> SOURCE[Project Repo (React + generated Dataverse services)]
-```
-
-## App Layout 
-
-```
-Overview Page (src/pages/OverviewPage.tsx:1-64)
-├─ Executive summary header (timestamp + CTA)
-└─ Tile grid
-   ├─ Dataset title/description
-   ├─ KPIs: Total / Ready / Blocked counts
-   └─ Button opens DatasetPage via onOpenDataset()
-
-Dataset Page (src/pages/DatasetPage.tsx:1-200)
-├─ Header
-│  ├─ Dataset name/description
-│  ├─ KPI pills: Total, Ready, Blocked, Variance
-│  └─ “New record” button (hidden for readOnly datasets)
-├─ Filter panel
-│  ├─ Search (customer/service)
-│  ├─ Status dropdown (Draft/Ready/Sent/Blocked)
-│  ├─ Billing cycle dropdown (computed from records)
-│  ├─ Owner dropdown (computed from records)
-│  └─ Reset filters action
-├─ ResponsiveTable
-│  ├─ Schema-driven columns (desktop + mobile cards)
-│  ├─ Sorting (fallback columns only)
-│  ├─ Inline badges (status, amount)
-│  └─ Row actions (Edit/Delete) when dataset is writable
-└─ Modals (writable datasets only)
-   ├─ RecordForm (create/edit) – fields from getDatasetFormFields()
-   └─ DeleteDialog – confirms removal before onDeleteRecord()
-
-Shared Data/Schema Layer
-├─ data/datasetLoader.ts:1-245
-│  ├─ datasetCatalog metadata (labels, categories, readOnly flag)
-│  ├─ fetchDatasetRecords() – calls generated services (top 100 rows)
-│  └─ projectRecordFromRaw() – normalizes CRUD payloads
-└─ config/datasetColumns.ts:1-255
-   ├─ Parses .power/schemas to build column order + labels
-   ├─ Derives mobile card fields and form definitions
-   └─ Exposes getters consumed by App.tsx
-```
-
-## What’s Next
-
-This post kicks off a short series documenting my path from “Power Apps maker” to “code app tinkerer.” Up next:
-
-- Wiring the datasets to the generated Dataverse services instead of local mocks.
-- Documenting PAC CLI deployment scripts so pushes to Dev/Test feel routine.
-- Capturing performance learnings once real data hits the responsive table.
-
-If you are on the same journey, start with the tutorial steps above, expect to tussle at the beginning and brace yourself with patiance towards your AI friends in case you are like me and you do not have so strong skill set in pro code development. Write everything down—you’ll want these breadcrumbs when the next hiccup arrives and when the output is good I recommend to commit in case the next edits are not so great.
+Part 2 will cover the actual building and editing experience: how I lean on Codex, GitHub Copilot, and PAC CLI together to evolve screens, wire Dataverse data safely, and recover when the AI guesses wrong. If you are curious about pairing AI tools with Power Apps code workflows, keep an eye on the feed—the next installment is entirely about that collaboration.
