@@ -8,6 +8,8 @@ toc: true
 excerpt: "My first attempts at building a Power Apps code app from scratch: setting up the toolchain, fighting through prompting via Codex and GitHub Copilot"
 ---
 
+I kept bumping into hot takes claiming “canvas apps are dead, long live code apps,” so I decided to find out what the fuss was about. If code apps truly unlock pro-dev agility without leaving the Power Platform behind, I want firsthand proof. This diary is my running log of that experiment.
+
 ## Kickstarting a Code App Environment
 
 Before I will touch any JSX, I have to give my workstation all the toys a code app expects. If you are starting from scratch, these are the steps I wish someone had printed on a single page. I rewrote this section to match Microsoft’s official quickstart guid and something extra. It walks through the journey from pretty much clean laptop to first deployed build. I had "pac" installed previously, same goes for .NET but I ended up installing it again or in case of .NET updating it to the version 10.
