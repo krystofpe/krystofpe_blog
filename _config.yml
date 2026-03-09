@@ -24,6 +24,9 @@ github_username: username
 minimal_mistakes_skin: "air" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
 search: true
 
+# Google Analytics
+google_tag_id: G-7X0K1QE975
+
 # Build settings
 markdown: kramdown
 remote_theme: mmistakes/minimal-mistakes
