@@ -1,18 +1,24 @@
 ---
 layout: single
-title: "Custom Logging for Power Apps canvas applications with SharePoint Lists"
+title: "Power Apps Canvas App Logging with SharePoint Lists"
 date: 2026-03-04 00:00:00 -0500
+last_modified_at: 2026-03-04 00:00:00 -0500
 categories: [Power Platform]
 tags: [Power Apps, Power Automate, SharePoint, Logging]
 toc: true
 excerpt: "Build a reusable logging pattern for canvas apps using SharePoint reference lists, a service-account Power Automate flow, and structured analytics data."
 ---
 
+**TL;DR:** This pattern logs canvas app usage to four SharePoint lists (`environments`, `applications`, `actions`, and an append-only `analytics` log) through a single service-account Power Automate flow, so end users never need write access. A reusable `cmpLogger` component fires the events, and Power BI turns them into adoption and failure-rate dashboards. The same flow serves any Microsoft 365 stack that can reach SharePoint.
+{: .notice--info}
+
 ## Why Custom Logging Matters
 
-Canvas apps often bridge multiple business processes and run in several environments. Without consistent telemetry you cannot correlate failures to deployments, compare adoption between Dev/Test/Prod, or respond quickly to regression reports. Just as importantly, you can’t validate which screens, features, or entire apps see real traffic versus shelfware. This solution focuses on logging usage signals—what actions people actually trigger, how often, from which environments—with enough fidelity that product owners can prune, refactor, or double down on functionality. A dedicated logging pipeline also keeps the SharePoint site secure because log writes happen via a service account instead of every end user needing contribute rights.
+Canvas apps often bridge multiple business processes and run in several environments. Without consistent telemetry you cannot correlate failures to deployments, compare adoption between Dev/Test/Prod, or respond quickly to regression reports. Just as importantly, you can’t validate which screens, features, or entire apps see real traffic versus shelfware.
 
-We initially tried to push custom events into Application Insights, but our tenant restrictions and the technology itself prevented the canvas apps from emitting bespoke telemetry. The SharePoint + Power Automate pattern below became the pragmatic workaround that still delivers the governance and traceability we needed.
+This solution focuses on logging usage signals (what actions people actually trigger, how often, from which environments) with enough fidelity that product owners can prune, refactor, or double down on functionality. A dedicated logging pipeline also keeps the SharePoint site secure because log writes happen via a service account instead of every end user needing contribute rights.
+
+We initially tried to push custom events into [Application Insights](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview), but our tenant restrictions and the technology itself prevented the canvas apps from emitting bespoke telemetry. The SharePoint + Power Automate pattern below became the pragmatic workaround that still delivers the governance and traceability we needed.
 
 ## SharePoint Data Model
 
@@ -57,6 +63,8 @@ erDiagram
     }
 ```
 
+*Figure: The four SharePoint lists. `environments`, `applications`, and `actions` are codelists; `analytics` is the append-only log that references both an application and an action.*
+
 ### Intent of Each List
 
 - **Environments** keep a canonical list of tenants or ALM stages so reporting can pivot on `EnvironmentType` without parsing text.
@@ -80,6 +88,8 @@ flowchart LR
     F --> G["Reports & Alerts"]
 ```
 
+*Figure: A logging call flows from the canvas app through the reusable component to a service-account Power Automate flow, which resolves the action and application lookups before writing one row to the `analytics` list.*
+
 ### Flow Inputs from the App
 
 | Parameter   | Example            | Purpose |
@@ -102,18 +112,20 @@ The logger is intentionally fire-and-forget—there is no **Respond to Power App
 
 ## Works with Any Stack that Can Reach SharePoint
 
-Because SharePoint lists and Power Automate connectors are ubiquitous inside Microsoft 365, the same logging hub now serves far more than canvas apps. Any stack that can write to the SharePoint `analytics` list—or call a HTTP-triggered variant of the logging flow—can emit the same structured telemetry. We already pipe events from standalone Power Automate processes, VBA macros (via a custom HTTP-trigger logging flow), and other lightweight scripts. Standardizing on the same action catalog gives every team the same reporting vocabulary no matter which runtime initiated the event.
+Because SharePoint lists and Power Automate connectors are ubiquitous inside Microsoft 365, the same logging hub now serves far more than canvas apps. Any stack that can write to the SharePoint `analytics` list—or call a HTTP-triggered variant of the logging flow—can emit the same structured telemetry. We already pipe events from standalone Power Automate processes, VBA macros (via a custom HTTP-trigger logging flow), [Power Apps code apps]({% post_url 2026-03-05-code-app-diary-part-1 %}), and other lightweight scripts. Standardizing on the same action catalog gives every team the same reporting vocabulary no matter which runtime initiated the event.
 
 ## Instrumenting the Canvas App
 
 - Create a `cmpLogger` component that wraps the `Power Automate` connector call. Expose properties for every flow parameter plus helper methods like `LogSuccess` and `LogFailure`.
 - On `App.OnStart`, set `Set(varSessionId, GUID())`, detect the OS via `Device().OSType`, and store the current app version in a global variable.
-- Wrap critical logic in `IfError` to make sure the user action completes even when the logging flow is down; surface a subtle notification if logging fails.
+- Wrap critical logic in [`IfError`](https://learn.microsoft.com/power-platform/power-fx/reference/function-iferror) to make sure the user action completes even when the logging flow is down; surface a subtle notification if logging fails.
 - Trigger logging at meaningful checkpoints: submitting forms, launching integrations, saving drafts, or handling unexpected errors.
+
+Because the logger lives in the app as a component plus a handful of Power Fx formulas, it is exactly the kind of thing worth a second pass in [a structured canvas app review]({% post_url 2026-06-06-code-review-canvas-apps-claude-code %}) before you ship it across environments.
 
 ## Making the Analytics Actionable
 
-- **Dashboards**: Usage discovery is the primary goal. Our entire reporting experience lives in Power BI: connect the `analytics` list as a single source of truth, build slicers for action/application/environment, and add DAX measures for both adoption metrics (e.g., action counts, unique users) and health metrics such as `Failure Rate = 1 - AVERAGE(Analytics[Successful])`.
+- **Dashboards**: Usage discovery is the primary goal. Our entire reporting experience lives in [Power BI](https://learn.microsoft.com/power-bi/fundamentals/power-bi-overview): connect the `analytics` list as a single source of truth, build slicers for action/application/environment, and add DAX measures for both adoption metrics (e.g., action counts, unique users) and health metrics such as `Failure Rate = 1 - AVERAGE(Analytics[Successful])`.
 - **Alerts**: Even though the telemetry focuses on traffic, we still run a notification system for failed actions. An auxiliary flow triggers immediately whenever a new analytics row arrives with `successful = false`, sending the owning team the action ID, session, and environment context. Power BI data alerts then look for longer-term spikes so regressions cannot hide behind adoption dashboards.
 - **Metadata hygiene**: Treat the `actions` list as source-controlled metadata. Require pull requests or approvals before adding new action IDs so your reports stay clean.
 - **Lifecycle**: Include the `ide` (Jira) key on the `applications` list so every log row can be traced back to its backlog item during RCA meetings.
