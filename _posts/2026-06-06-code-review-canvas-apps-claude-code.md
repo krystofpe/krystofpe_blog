@@ -40,7 +40,7 @@ Two things follow from this diagram that trip everyone up:
 
 ## Setting it up
 
-This is the condensed version. (I keep a full troubleshooting manual separately; this is enough to get reviewing.)
+This is the condensed version, enough to get you reviewing. If you want the complete, step-by-step walk-through — IDs, scopes, PAC auth, and a troubleshooting table — see the [full setup tutorial]({% post_url 2026-06-11-canvas-apps-claude-code-mcp-tutorial %}).
 
 ### Prerequisites
 
@@ -166,4 +166,4 @@ For *reviewing* canvas apps: unreservedly yes, even in preview. Turning an app i
 
 For *editing* production apps through it: I'd stay cautious while it's preview, keep the component caveat in mind, and lean on `compile_canvas` as the safety net it's meant to be. The direction is clearly right: canvas apps are finally something you can [treat like code]({% post_url 2026-03-05-code-app-diary-part-1 %}), and the tooling to review them like code is catching up fast.
 
-*Setup details in this post are condensed from a longer troubleshooting manual I keep for the Canvas Authoring MCP; if the sync step misbehaves, nine times out of ten it's coauthoring being off or PAC auth pointing at the wrong environment.*
+*Setup details in this post are condensed from my [full setup tutorial]({% post_url 2026-06-11-canvas-apps-claude-code-mcp-tutorial %}) for the Canvas Authoring MCP; if the sync step misbehaves, nine times out of ten it's coauthoring being off or PAC auth pointing at the wrong environment.*
